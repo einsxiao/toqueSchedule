@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+from evawiz_basic import *
+import schedule
+import traceback
+def help_info():
+    print """Usage: scheduled [operation]
+    run
+        run the schedule program
+    start
+        start the schedule daemon
+    stop
+        stop the schedule daemon
+    restart
+        restart the schedule daemon
+    status
+        checking the running status of the shedule daemon
+    help
+        show this help information
+    """
+    pass
+
+
+
+def start_schedule(mode='daemon'):
+    print "try running schedule"
+    sch = schedule.Schedule()
+    if mode == "daemon":
+        print "scheduled running in daemon mode"
+        scheduled = ServerDaemon( sch.run_forever, 'scheduled.pid',"evawiz_schedule" )
+        scheduled.start()
+    else:
+        print "running directly"
+        sch.run_forever()
+        pass
+    pass
+
+if ( len(sys.argv) == 1 ):
+     print "use -h|--help|help for more information\n"
+
+else:
+    try:
+        operation = sys.argv[1]
+        if operation == 'help' or operation == '-h' or operation == '-help':
+            help_info();
+            exit(0);
+            pass
+        if operation =='run':
+            start_schedule('direct')
+            exit(0);
+            pass
+        if operation == 'start':
+            start_schedule('daemon')
+            exit(0)
+            pass
+        if operation == 'stop':
+            sch = ServerDaemon(None,"scheduled.pid","evawiz_schedule")
+            sch.stop();
+            print "operation finished."
+            exit(0)
+            pass
+        if operation == 'status':
+            sch = ServerDaemon(None,"scheduled.pid","evawiz_schedule")
+            sch.status();
+            exit(0)
+            pass
+        if operation == 'restart':
+            sch = ServerDaemon(None,"scheduled.pid","evawiz_schedule")
+            sch.stop();
+            sch.start();
+            exit(0)
+            pass
+        print "Error: unkown operation '"+sys.argv[1] +"'"
+        pass
+    except Exception,e:
+        print "schedule exist with error:",e
+        traceback.print_exc()
+        pass
+    pass
+
+
+
+            
+            
